@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Will you be my Valentine?</title>
+<style>
+:root{
+  --bg: #fff0f6;
+  --card: #ffffff;
+  --accent: #ff6b97;
+  --accent-soft: #ffd1e1;
+  --text: #4a2432;
+  --muted: #8a5a6a;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background: linear-gradient(180deg,#fff7fb,var(--bg));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:100vh;
+  padding:16px;
+  color: var(--text);
+}
+
+/* Card */
+.card{
+  width:100%;
+  max-width:420px;
+  background: var(--card);
+  border-radius:24px;
+  padding:24px;
+  box-shadow: 0 20px 40px rgba(180,70,120,.12);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+
+/* Typography */
+h1{ font-size:clamp(22px,6vw,34px); margin-bottom:8px; }
+p.lead{ font-size:15px; color: var(--muted); margin-bottom:24px; }
+
+/* GIFs */
+.visuals{
+  display:flex;
+  justify-content:center;
+  gap:14px;
+  margin-bottom:32px;
+}
+.vis{
+  width:74px;
+  height:74px;
+  border-radius:16px;
+  overflow:hidden;
+  background: var(--accent-soft);
+  animation: float 3.6s ease-in-out infinite;
+}
+.vis:nth-child(2){animation-delay:0.3s;}
+.vis:nth-child(3){animation-delay:0.6s;}
+.vis iframe{
+  width:100%;
+  height:100%;
+  border:0;
+  pointer-events:none;
+}
+@keyframes float{
+  0%{transform:translateY(0);}
+  50%{transform:translateY(-6px);}
+  100%{transform:translateY(0);}
+}
+
+/* Actions */
+.actions{
+  width:100%;
+  max-width:260px;
+  position:relative;
+  height:120px;
+}
+button{
+  width:100%;
+  border:none;
+  padding:14px;
+  border-radius:14px;
+  font-size:16px;
+  cursor:pointer;
+  transition: transform .15s ease, box-shadow .15s ease, background .2s;
+}
+button:active{ transform: translateY(1px); }
+
+/* Yes button */
+.yes{
+  background: linear-gradient(180deg, var(--accent), #ff8fb2);
+  color:#fff;
+  font-weight:700;
+  box-shadow:0 8px 20px rgba(255,107,151,.35);
+  margin-bottom:12px;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+.yes:hover{
+  filter: brightness(1.1);
+}
+
+/* No button */
+.no{
+  background:#fff;
+  color:#b14a6c;
+  border:1px solid #ffd6e4;
+  position:absolute;
+  left:0;
+  top:60px;
+  transition: all .15s ease;
+}
+
+/* Success */
+.success{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+}
+.success iframe{
+  width:170px;
+  height:170px;
+  border-radius:18px;
+  border:0;
+  pointer-events:none;
+  margin-bottom:14px;
+}
+.success h2{ font-size:clamp(20px,6vw,28px); margin-bottom:6px; }
+.success p{ color: var(--muted); font-size:15px; margin-bottom:6px; }
+.success .heart{ font-size:2rem; animation: pulse 1s ease-in-out infinite; }
+@keyframes pulse{ 0%,100%{transform:scale(1);} 50%{transform:scale(1.2);} }
+
+@media(min-width:700px){
+  .vis{ width:84px; height:84px; }
+}
+</style>
+</head>
+<body>
+
+<div class="card" id="card">
+  <h1>Will you be my Valentine? 💖</h1>
+  <p class="lead">I picked some cute friends to cheer you up</p>
+
+  <div class="visuals">
+    <div class="vis"><iframe src="https://giphy.com/embed/ekebkJkXk7HfmFDr5r" allowfullscreen></iframe></div>
+    <div class="vis"><iframe src="https://giphy.com/embed/llfec9QEGJKjzJqh98" allowfullscreen></iframe></div>
+    <div class="vis"><iframe src="https://giphy.com/embed/8QQMgZCDlefR9pNFjA" allowfullscreen></iframe></div>
+  </div>
+
+  <div class="actions" id="actions">
+    <button class="yes" id="yesBtn">Yes 💕</button>
+    <button class="no" id="noBtn">No 😢</button>
+  </div>
+</div>
+
+<script>
+const noBtn = document.getElementById('noBtn');
+const yesBtn = document.getElementById('yesBtn');
+const card = document.getElementById('card');
+const actions = document.getElementById('actions');
+
+let noScale = 1;
+let yesScale = 1;
+
+function rand(min,max){return Math.random()*(max-min)+min;}
+
+function moveNo(){
+  const area = actions.getBoundingClientRect();
+  const btn = noBtn.getBoundingClientRect();
+  const maxX = area.width - btn.width;
+  const maxY = area.height - btn.height;
+  const x = rand(0, Math.max(0,maxX));
+  const y = rand(0, Math.max(0,maxY));
+  noBtn.style.left = `${x}px`;
+  noBtn.style.top = `${y}px`;
+
+  // Shrink No, Grow Yes
+  noScale = Math.max(0.5,noScale-0.08);
+  yesScale = Math.min(1.3,yesScale+0.05);
+  noBtn.style.transform = `scale(${noScale})`;
+  yesBtn.style.transform = `scale(${yesScale})`;
+}
+
+// Only trigger on hover or touch
+noBtn.addEventListener('mouseenter', moveNo);
+noBtn.addEventListener('touchstart', e=>{
+  e.preventDefault();
+  moveNo();
+},{passive:false});
+
+// Yes click shows success
+yesBtn.addEventListener('click', ()=>{
+  card.innerHTML = `
+    <div class="success">
+      <iframe src="https://giphy.com/embed/soO0LkhW0CChLw2edX" allowfullscreen></iframe>
+      <h2>Yay!! 💘 I knew you'd say yes!</h2>
+      <p>This just made my day 🥰</p>
+      <div class="heart">💖</div>
+    </div>
+  `;
+});
+</script>
+
+</body>
+</html>
